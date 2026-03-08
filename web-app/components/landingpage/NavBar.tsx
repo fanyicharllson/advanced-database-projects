@@ -28,14 +28,14 @@ const navLinks: NavLink[] = [
   { label: "Blog", href: "#" },
 ];
 
-const categories = [
-  "Electronics",
-  "Fashion",
-  "Home & Living",
-  "Sports",
-  "Beauty",
-  "Toys",
-];
+// const categories = [
+//   "Electronics",
+//   "Fashion",
+//   "Home & Living",
+//   "Sports",
+//   "Beauty",
+//   "Toys",
+// ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
