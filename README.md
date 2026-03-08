@@ -24,7 +24,7 @@ The goal is to design, implement, and deploy a production-grade database system 
 │   └── components/              # UI components
 │
 ├── 📁 docs/                     # Project documentation
-│   ├── README.md                # ← You are here
+│   ├── README.md             
 │   ├── documentation.md         # Full system & database documentation
 │   └── design-decisions.md     # Notes on architectural choices
 │
