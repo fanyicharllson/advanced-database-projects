@@ -18,8 +18,8 @@ The goal is to design, implement, and deploy a production-grade database system 
 
 ```
 📦 globalmart-advanced-db/
-├── 📁 web-app/                  # Frontend web application
-│   ├── index.html               # Landing page entry point
+├── 📁 web-app/                  # web application
+│ 
 │   ├── assets/                  # Static assets (CSS, JS, images)
 │   └── components/              # UI components
 │
