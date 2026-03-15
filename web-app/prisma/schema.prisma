@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CustomerTier {
+  tier_id             Int        @id @default(autoincrement())
+  tier_name           String     @db.VarChar(100)
+  discount_percentage Decimal?   @default(0) @db.Decimal(5, 2)
+  min_lifetime_value  Decimal?   @default(0) @db.Decimal(10, 2)
+  customers           Customer[]
+
+  @@map("customer_tiers")
+}
+
+model Customer {
+  customer_id     Int           @id @default(autoincrement())
+  tier_id         Int?
+  name            String        @db.VarChar(255)
+  email           String        @unique @db.VarChar(255)
+  lifetime_value  Decimal?      @default(0) @db.Decimal(10, 2)
+  registered_date DateTime?     @default(now()) @db.Date
+  tier            CustomerTier? @relation(fields: [tier_id], references: [tier_id], onUpdate: NoAction)
+  orders          Order[]
+
+  @@index([tier_id], map: "idx_customers_tier")
+  @@map("customers")
+}
+
+model Currency {
+  currency_code String         @id @db.Char(3)
+  currency_name String         @db.VarChar(100)
+  symbol        String         @db.VarChar(10)
+  from_rates    ExchangeRate[] @relation("FromCurrency")
+  to_rates      ExchangeRate[] @relation("ToCurrency")
+  products      Product[]
+
+  @@map("currencies")
+}
+
+model ExchangeRate {
+  from_currency String   @db.Char(3)
+  to_currency   String   @db.Char(3)
+  effective     DateTime @db.Date
+  rate          Decimal  @db.Decimal(20, 8)
+  from          Currency @relation("FromCurrency", fields: [from_currency], references: [currency_code], onDelete: NoAction, onUpdate: NoAction)
+  to            Currency @relation("ToCurrency", fields: [to_currency], references: [currency_code], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_currency, to_currency, effective])
+  @@index([effective(sort: Desc)], map: "idx_exchange_rates_date")
+  @@map("exchange_rates")
+}
+
+model Product {
+  product_id         Int                @id @default(autoincrement())
+  product_name       String             @db.VarChar(200)
+  base_price         Decimal            @db.Decimal(10, 2)
+  currency_code      String?            @db.Char(3)
+  category           String?            @db.VarChar(50)
+  inventory          Inventory[]
+  order_items        OrderItem[]
+  product_attributes ProductAttribute[]
+  currency           Currency?          @relation(fields: [currency_code], references: [currency_code], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("products")
+}
+
+model Attribute {
+  attribute_id       Int                @id @default(autoincrement())
+  attribute_name     String             @db.VarChar(50)
+  product_attributes ProductAttribute[]
+
+  @@map("attributes")
+}
+
+model ProductAttribute {
+  product_id   Int
+  attribute_id Int
+  value        String    @db.VarChar(100)
+  attribute    Attribute @relation(fields: [attribute_id], references: [attribute_id], onDelete: Cascade, onUpdate: NoAction)
+  product      Product   @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([product_id, attribute_id])
+  @@map("product_attributes")
+}
+
+model WareHouse {
+  warehouse_id Int         @id @default(autoincrement())
+  location     String      @db.VarChar(100)
+  capacity     Int
+  inventory    Inventory[]
+
+  @@map("warehouses")
+}
+
+model Inventory {
+  inventory_id      Int        @id @default(autoincrement())
+  product_id        Int?
+  warehouse_id      Int?
+  quantity_on_hand  Int?       @default(0)
+  reorder_threshold Int?       @default(50)
+  product           Product?   @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
+  warehouse         WareHouse? @relation(fields: [warehouse_id], references: [warehouse_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([product_id, warehouse_id])
+  @@index([product_id], map: "idx_inventory_product")
+  @@index([warehouse_id], map: "idx_inventory_warehouse")
+  @@map("inventory")
+}
+
+model Order {
+  order_id     Int         @id @default(autoincrement())
+  customer_id  Int?
+  order_date   DateTime?   @default(now()) @db.Timestamp(6)
+  total_amount Decimal?    @db.Decimal(10, 2)
+  status       String?     @default("PENDING") @db.VarChar(20)
+  order_items  OrderItem[]
+  customer     Customer?   @relation(fields: [customer_id], references: [customer_id], onUpdate: NoAction)
+
+  @@index([customer_id], map: "idx_orders_customer")
+  @@map("orders")
+}
+
+model OrderItem {
+  order_id    Int
+  product_id  Int
+  line_number Int
+  quantity    Int
+  unit_price  Decimal @db.Decimal(10, 2)
+  order       Order   @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)
+  product     Product @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([order_id, product_id])
+  @@map("order_items")
+}
