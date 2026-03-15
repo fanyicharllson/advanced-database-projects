@@ -1,0 +1,9 @@
+feat: add landing page components including Footer, Hero, Navbar, NewestProducts, and PromoBanners
+
+- Implemented Footer component with trust badges, newsletter subscription, and footer links.
+- Created Hero component for showcasing promotional slides with animations and statistics.
+- Developed Navbar component with responsive design, including mobile menu and search functionality.
+- Added NewestProducts component to display recently added products with pricing and ratings.
+- Introduced PromoBanners component for highlighting special offers and promotions.
+- Implemented useUnsplashImages hook for fetching images from Unsplash API with caching.
+- Added Badge component for displaying labels and notifications.
