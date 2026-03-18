@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 interface NavLink {
   label: string;
@@ -41,6 +42,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -120,7 +122,12 @@ export default function Navbar() {
               <Button variant="ghost" size="icon" className="hidden md:flex">
                 <Globe className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="cursor-pointer"
+                onClick={() => router.push("/profile")}
+              >
                 <User className="w-5 h-5" />
               </Button>
               <Button variant="ghost" size="icon" className="relative">
